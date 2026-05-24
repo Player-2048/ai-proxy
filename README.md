@@ -1,4 +1,4 @@
-# Personal AI — 个人数据层
+# USB-AI — 个人数据层
 
 > 一个本地运行的 AI 聚合工具。在同一个界面里使用 DeepSeek、GPT、Claude、Groq，
 > 所有对话自动保存，切换供应商时历史可查、上下文可注入。
