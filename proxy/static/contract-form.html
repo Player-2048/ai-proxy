@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合同生成 — USB-AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .contract-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .contract-container h1 {
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .contract-container .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .section {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+        .section h3 {
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: #4f46e5;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .form-row .field {
+            flex: 1;
+        }
+        .form-row .field label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .form-row .field input {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .form-row .field input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        .full-width {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .full-width label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .full-width input {
+            width: 96%;
+            padding: 7px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .full-width input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        .btn-generate {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #4f46e5;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .btn-generate:hover {
+            background: #4338ca;
+        }
+        .btn-generate:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .nav-link {
+            display: block;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #4f46e5;
+            text-decoration: none;
+        }
+        #status-msg {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 13px;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .status-success {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+        .status-error {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="contract-container">
+        <h1>📄 车辆质押借款合同</h1>
+        <p class="subtitle">填写以下信息，自动生成合同 Word 文件，打印后签字按指纹</p>
+
+        <form id="contract-form">
+            <!-- 借款人信息 -->
+            <div class="section">
+                <h3>借款人信息</h3>
+                <div class="form-row">
+                    <div class="field"><label>姓名</label><input name="borrower_name" required></div>
+                    <div class="field"><label>身份证号</label><input name="borrower_id" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>电话</label><input name="borrower_phone" required></div>
+                    <div class="field" style="flex:2"><label>地址</label><input name="borrower_addr"></div>
+                </div>
+            </div>
+
+            <!-- 出借人信息 -->
+            <div class="section">
+                <h3>出借人信息</h3>
+                <div class="form-row">
+                    <div class="field"><label>姓名</label><input name="lender_name" required></div>
+                    <div class="field"><label>身份证号</label><input name="lender_id" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>电话</label><input name="lender_phone" required></div>
+                    <div class="field" style="flex:2"><label>地址</label><input name="lender_addr"></div>
+                </div>
+            </div>
+
+            <!-- 借款信息 -->
+            <div class="section">
+                <h3>借款信息</h3>
+                <div class="form-row">
+                    <div class="field"><label>借款金额（大写）</label><input name="loan_amount_cn" placeholder="壹万元整" required></div>
+                    <div class="field"><label>借款金额（小写 ¥）</label><input name="loan_amount_num" placeholder="10000.00" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>期限（月）</label><input name="loan_term" placeholder="3" required></div>
+                    <div class="field"><label>月利率（%）</label><input name="monthly_rate" placeholder="1.5" required></div>
+                    <div class="field"><label>月付息日</label><input name="interest_pay_day" placeholder="25"></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>开始日期</label><input name="loan_date_start" placeholder="2026年5月25日" required></div>
+                    <div class="field"><label>到期日期</label><input name="loan_date_end" placeholder="2026年8月25日" required></div>
+                </div>
+                <div class="full-width">
+                    <label>借款用途</label>
+                    <input name="loan_purpose" placeholder="资金周转">
+                </div>
+            </div>
+
+            <!-- 车辆信息 -->
+            <div class="section">
+                <h3>质押车辆信息</h3>
+                <div class="form-row">
+                    <div class="field"><label>品牌型号</label><input name="vehicle_brand" placeholder="丰田卡罗拉" required></div>
+                    <div class="field"><label>号牌号码</label><input name="vehicle_plate" placeholder="粤B12345" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>发动机号码</label><input name="vehicle_engine" required></div>
+                    <div class="field"><label>车架号（VIN）</label><input name="vehicle_vin" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="field"><label>登记证号</label><input name="vehicle_reg"></div>
+                    <div class="field"><label>车身颜色</label><input name="vehicle_color" placeholder="白色"></div>
+                </div>
+            </div>
+
+            <!-- 收款账户 -->
+            <div class="section">
+                <h3>收款账户</h3>
+                <div class="form-row">
+                    <div class="field"><label>户名</label><input name="bank_name" required></div>
+                    <div class="field"><label>开户行</label><input name="bank_branch" required></div>
+                </div>
+                <div class="full-width">
+                    <label>卡号</label>
+                    <input name="bank_account" required>
+                </div>
+            </div>
+
+            <!-- 日期 -->
+            <div class="section">
+                <h3>签署日期</h3>
+                <div class="full-width">
+                    <label>日期</label>
+                    <input name="iou_date" placeholder="2026年5月25日" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-generate" id="generate-btn">📄 生成合同并下载</button>
+            <div id="status-msg"></div>
+        </form>
+
+        <a href="/" class="nav-link">← 返回聊天</a>
+    </div>
+
+    <script>
+        document.getElementById("contract-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("generate-btn");
+            const msg = document.getElementById("status-msg");
+            btn.disabled = true;
+            btn.textContent = "⏳ 生成中...";
+            msg.className = "";
+            msg.textContent = "";
+
+            const form = e.target;
+            const data = {};
+            form.querySelectorAll("input").forEach(input => {
+                data[input.name] = input.value.trim();
+            });
+
+            try {
+                const resp = await fetch("/contract/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+                if (!resp.ok) {
+                    const err = await resp.text();
+                    throw new Error(err);
+                }
+                // Download the returned file
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `车辆质押借款合同_${data.borrower_name || "unknown"}.docx`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                msg.className = "status-success";
+                msg.textContent = "✅ 合同已生成并下载，请打印后签字";
+            } catch (err) {
+                msg.className = "status-error";
+                msg.textContent = "❌ 生成失败: " + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "📄 生成合同并下载";
+            }
+        });
+    </script>
+</body>
+</html>
