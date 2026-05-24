@@ -7,7 +7,7 @@ import webbrowser
 from pathlib import Path
 
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import load_config, resolve_path
@@ -18,7 +18,6 @@ from .memory import Memory
 from .adapters.openai_compatible import OpenAICompatibleAdapter
 from .adapters.anthropic import AnthropicAdapter
 from .adapters.gemini import GeminiAdapter
-from .contract import fill_contract
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("proxy")
@@ -121,38 +120,6 @@ async def export_data():
             "Content-Length": str(buf.tell()),
         },
     )
-
-
-@app.get("/contract")
-async def contract_form():
-    """Serve the contract fill-in form."""
-    contract_path = STATIC_DIR / "contract-form.html"
-    if contract_path.exists():
-        return HTMLResponse(content=contract_path.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>Contract form not found</h1>")
-
-
-@app.post("/contract/generate")
-async def generate_contract(request: Request):
-    """Fill contract template with form data and return as .docx."""
-    data = await request.json()
-
-    try:
-        doc_bytes = fill_contract(data)
-        from fastapi.responses import StreamingResponse
-        import io
-        buf = io.BytesIO(doc_bytes)
-        name = data.get('borrower_name', 'unknown')
-        return StreamingResponse(
-            iter([buf.getvalue()]),
-            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            headers={
-                "Content-Disposition": f"attachment; filename=车辆质押借款合同_{name}.docx",
-                "Content-Length": str(buf.tell()),
-            },
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/v1/chat/completions")
